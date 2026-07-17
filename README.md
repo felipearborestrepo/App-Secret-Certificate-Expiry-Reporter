@@ -1,5 +1,5 @@
 # Step 1 — Define helper functions
-
+- **Connect-ToGraph** — connects to **Microsoft Graph** using the **Application.Read.All** scope.
 - **Get-UrgencyLevel** — takes $DaysRemaining and returns **EXPIRED** (< **0** days), **CRITICAL** (≤ **30**), **WARNING** (≤ **60**), **NOTICE** (≤ **90**), or **OK**.
 - **Get-UrgencyColor** — maps each urgency level to a console color (**Red** for **EXPIRED/CRITICAL**, **Yellow** for **WARNING**, **Cyan** for **NOTICE**, **Green** for **default/OK**).
 - **Write-ConsoleSummary** — filters results down to anything not OK; if nothing's flagged, prints a clean "all good" message and returns. Otherwise -prints a report header (scan date + flagged count), then loops through EXPIRED → CRITICAL → WARNING → NOTICE, printing each group's items (sorted by days remaining) with app name, credential type, days label, expiry date, and name.
