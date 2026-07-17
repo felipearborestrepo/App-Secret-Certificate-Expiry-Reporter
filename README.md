@@ -70,3 +70,5 @@ function Write-ConsoleSummary {
     }
 }
 ```
+# Step 2 — Connect to Graph
+- Calls Connect-ToGraph.
