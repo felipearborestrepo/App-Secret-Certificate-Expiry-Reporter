@@ -1,4 +1,4 @@
-# Step 1 — Define helper functions
+# Define helper Functions
 - **Connect-ToGraph** — connects to **Microsoft Graph** using the **Application.Read.All** scope.
 - **Get-UrgencyLevel** — takes $DaysRemaining and returns **EXPIRED** (< **0** days), **CRITICAL** (≤ **30**), **WARNING** (≤ **60**), **NOTICE** (≤ **90**), or **OK**.
 - **Get-UrgencyColor** — maps each urgency level to a console color (**Red** for **EXPIRED/CRITICAL**, **Yellow** for **WARNING**, **Cyan** for **NOTICE**, **Green** for **default/OK**).
@@ -70,14 +70,76 @@ function Write-ConsoleSummary {
     }
 }
 ```
-# Step 2 — Connect to Graph
+# Step 1 — Connect to Graph
 - Calls Connect-ToGraph.
+```powershell
+# ============================================================
+# STEP 1 — Connect to Graph
+# ============================================================
 
-# Step 3 — Pull all App Registrations
+Connect-ToGraph
+```
+# Step 2 — Pull all App Registrations
 - Calls **Get-MgApplication -All** with properties **Id, DisplayName, AppId, PasswordCredentials, KeyCredentials**, and reports how many apps were found.
+```powershell
+# ============================================================
+# STEP 2 — Pull all App Registrations
+# ============================================================
 
-# Step 4 — Loop through every app and check credentials
+Write-Host "[*] Retrieving all App Registrations..." -ForegroundColor Cyan
+$apps = Get-MgApplication -All -Property "Id,DisplayName,AppId,PasswordCredentials,KeyCredentials"
+Write-Host "[+] Found $($apps.Count) app registration(s)" -ForegroundColor Green
+```
+# Step 3 — Loop through every app and check credentials
 - For each app:
-
 - Loops through **PasswordCredentials (secrets)**: calculates days remaining, gets urgency, skips if OK, otherwise adds a result (AppDisplayName, AppId, ObjectId, CredentialType = "Secret", CredentialHint, ExpiryDate, DaysRemaining, Urgency).
 - Loops through **KeyCredentials (certificates)**: same logic, CredentialType = "Certificate", CredentialHint falling back to KeyId if unnamed.
+```powershell
+Write-Host "[*] Evaluating secrets and certificates..." -ForegroundColor Cyan
+
+$results = [System.Collections.Generic.List[PSCustomObject]]::new()
+$today   = Get-Date
+
+foreach ($app in $apps) {
+
+    # Check Client Secrets
+    foreach ($secret in $app.PasswordCredentials) {
+        $expiry   = $secret.EndDateTime
+        $daysLeft = [int]($expiry - $today).TotalDays
+        $urgency  = Get-UrgencyLevel -DaysRemaining $daysLeft
+
+        if ($urgency -eq "OK") { continue }
+
+        $results.Add([PSCustomObject]@{
+            AppDisplayName  = $app.DisplayName
+            AppId           = $app.AppId
+            ObjectId        = $app.Id
+            CredentialType  = "Secret"
+            CredentialHint  = if ($secret.DisplayName) { $secret.DisplayName } else { "(unnamed)" }
+            ExpiryDate      = $expiry.ToString("yyyy-MM-dd")
+            DaysRemaining   = $daysLeft
+            Urgency         = $urgency
+        })
+    }
+
+    # Check Certificates
+    foreach ($cert in $app.KeyCredentials) {
+        $expiry   = $cert.EndDateTime
+        $daysLeft = [int]($expiry - $today).TotalDays
+        $urgency  = Get-UrgencyLevel -DaysRemaining $daysLeft
+
+        if ($urgency -eq "OK") { continue }
+
+        $results.Add([PSCustomObject]@{
+            AppDisplayName  = $app.DisplayName
+            AppId           = $app.AppId
+            ObjectId        = $app.Id
+            CredentialType  = "Certificate"
+            CredentialHint  = if ($cert.DisplayName) { $cert.DisplayName } else { $cert.KeyId }
+            ExpiryDate      = $expiry.ToString("yyyy-MM-dd")
+            DaysRemaining   = $daysLeft
+            Urgency         = $urgency
+        })
+    }
+}
+```
