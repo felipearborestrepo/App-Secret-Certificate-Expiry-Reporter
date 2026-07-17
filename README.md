@@ -194,5 +194,6 @@ Write-Host "[*] Disconnected from Graph.`n" -ForegroundColor DarkGray
 ```
 # Display Screen Results in PowerShell
 <img width="826" height="553" alt="Screenshot 2026-07-16 at 22 48 21" src="https://github.com/user-attachments/assets/87650201-a8dc-4456-81b7-8d0b99815e43" />
+
 # CSV File Results
 <img width="1429" height="158" alt="Screenshot 2026-07-16 at 22 48 57" src="https://github.com/user-attachments/assets/028d280d-3e71-4f1b-8aa3-1ec6954d1f13" />
