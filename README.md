@@ -72,3 +72,12 @@ function Write-ConsoleSummary {
 ```
 # Step 2 — Connect to Graph
 - Calls Connect-ToGraph.
+
+# Step 3 — Pull all App Registrations
+- Calls **Get-MgApplication -All** with properties **Id, DisplayName, AppId, PasswordCredentials, KeyCredentials**, and reports how many apps were found.
+
+# Step 4 — Loop through every app and check credentials
+- For each app:
+
+- Loops through **PasswordCredentials (secrets)**: calculates days remaining, gets urgency, skips if OK, otherwise adds a result (AppDisplayName, AppId, ObjectId, CredentialType = "Secret", CredentialHint, ExpiryDate, DaysRemaining, Urgency).
+- Loops through **KeyCredentials (certificates)**: same logic, CredentialType = "Certificate", CredentialHint falling back to KeyId if unnamed.
