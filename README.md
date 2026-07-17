@@ -1,4 +1,4 @@
-### App Secret & Certificate Expiry Reporter
+# App Secret & Certificate Expiry Reporter
 
 # Define helper Functions
 - **Connect-ToGraph** — connects to **Microsoft Graph** using the **Application.Read.All** scope.
