@@ -4,7 +4,7 @@
 - **Get-UrgencyColor** — maps each urgency level to a console color (**Red** for **EXPIRED/CRITICAL**, **Yellow** for **WARNING**, **Cyan** for **NOTICE**, **Green** for **default/OK**).
 - **Write-ConsoleSummary** — filters results down to anything not OK; if nothing's flagged, prints a clean "all good" message and returns. Otherwise -prints a report header (scan date + flagged count), then loops through EXPIRED → CRITICAL → WARNING → NOTICE, printing each group's items (sorted by days remaining) with app name, credential type, days label, expiry date, and name.
 
-'''powershell
+```powershell
 # ============================================================
 # FUNCTIONS
 # ============================================================
@@ -69,4 +69,4 @@ function Write-ConsoleSummary {
         Write-Host ""
     }
 }
-'''
+```
