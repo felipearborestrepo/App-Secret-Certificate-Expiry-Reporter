@@ -1,3 +1,5 @@
+### App Secret & Certificate Expiry Reporter
+
 # Define helper Functions
 - **Connect-ToGraph** — connects to **Microsoft Graph** using the **Application.Read.All** scope.
 - **Get-UrgencyLevel** — takes $DaysRemaining and returns **EXPIRED** (< **0** days), **CRITICAL** (≤ **30**), **WARNING** (≤ **60**), **NOTICE** (≤ **90**), or **OK**.
@@ -164,7 +166,7 @@ if ($results.Count -gt 0) {
 ```
 
 # Step 6 — Summary
-- Counts flagged results by urgency and prints a final tally: total apps scanned, credentials flagged, and the breakdown (expired, critical, warning, notice).
+- Counts **flagged results** by urgency and prints a final tally: total apps scanned, credentials flagged, and the breakdown (expired, critical, warning, notice).
 ```powershell
 # ============================================================
 # STEP 6 — Summary
@@ -185,7 +187,7 @@ Write-Host "  Notice   (<=90d)   : $notice"   -ForegroundColor Cyan
 Write-Host "─────────────────────────────────────────────────────`n" -ForegroundColor DarkGray
 ```
 # Step 8 — Disconnect
-- Calls Disconnect-MgGraph and confirms disconnection.
+- Calls **Disconnect-MgGraph** and confirms disconnection.
 ```powershell
 Disconnect-MgGraph | Out-Null
 Write-Host "[*] Disconnected from Graph.`n" -ForegroundColor DarkGray
