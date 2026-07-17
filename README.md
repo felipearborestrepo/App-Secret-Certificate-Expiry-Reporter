@@ -143,3 +143,50 @@ foreach ($app in $apps) {
     }
 }
 ```
+# Step 4 — Print results to console
+- Calls **Write-ConsoleSummary -Results $results**.
+```powershell
+# ============================================================
+# STEP 4 — Print results to console
+# ============================================================
+
+Write-ConsoleSummary -Results $results
+```
+# Step 5 — Export to CSV
+- If results exist, sorts by DaysRemaining and exports to **$HOME/Desktop/AppSecretExpiry.csv**. Otherwise prints a **"nothing to export"** message.
+```powershell
+if ($results.Count -gt 0) {
+    $results | Sort-Object DaysRemaining | Export-Csv -Path "$HOME/Desktop/AppSecretExpiry.csv" -NoTypeInformation
+    Write-Host "[+] CSV exported to Desktop" -ForegroundColor Green
+} else {
+    Write-Host "[+] Nothing to export — no credentials expiring within 90 days." -ForegroundColor Green
+}
+```
+
+# Step 6 — Summary
+- Counts flagged results by urgency and prints a final tally: total apps scanned, credentials flagged, and the breakdown (expired, critical, warning, notice).
+```powershell
+# ============================================================
+# STEP 6 — Summary
+# ============================================================
+
+$expired  = ($results | Where-Object Urgency -eq "EXPIRED").Count
+$critical = ($results | Where-Object Urgency -eq "CRITICAL").Count
+$warning  = ($results | Where-Object Urgency -eq "WARNING").Count
+$notice   = ($results | Where-Object Urgency -eq "NOTICE").Count
+
+Write-Host "`n── Summary ──────────────────────────────────────────" -ForegroundColor DarkGray
+Write-Host "  Total apps scanned : $($apps.Count)"  -ForegroundColor White
+Write-Host "  Credentials flagged: $($results.Count)" -ForegroundColor White
+Write-Host "  Expired            : $expired"  -ForegroundColor Red
+Write-Host "  Critical (<=30d)   : $critical" -ForegroundColor Red
+Write-Host "  Warning  (<=60d)   : $warning"  -ForegroundColor Yellow
+Write-Host "  Notice   (<=90d)   : $notice"   -ForegroundColor Cyan
+Write-Host "─────────────────────────────────────────────────────`n" -ForegroundColor DarkGray
+```
+# Step 8 — Disconnect
+- Calls Disconnect-MgGraph and confirms disconnection.
+```powershell
+Disconnect-MgGraph | Out-Null
+Write-Host "[*] Disconnected from Graph.`n" -ForegroundColor DarkGray
+```
